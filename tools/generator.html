@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<title>
+			The Last Of At Tools
+		</title>
+		<style>
+			BODY {
+				font-family: sans-serif;
+			}
+
+			.code {
+				padding:20px;
+				border:1px solid #a0a0a0;
+				background-color: #cecece;
+				font-family: monospace;
+			}
+		</style>
+	</style>
+	<body onload="make()">
+		<H1>The Last Of At Tools</h1>
+		<H2>Minified version</H2>
+		<p>Copy/paste this block for the version without comments. It should
+			be less or equal 1024 bytes/characters long.
+		</p>
+		<div id="minicode" class="code"></div>
+		<p>This code is <span id="minicodelength"></span> bytes long.</p>
+		<p>If you want to minify it for real, try <i>uglifyjs</i> with:
+		<div class="code">
+			uglifyjs -nc thelastofat.js
+		</div>
+		<p>But it should look the same of the code shown before.</p>
+		<p>Want to get the uncommented version via command line?</p>
+		<div class="code">
+			sed "s/[ ]*\/\/.*//;s/\t//g;s/\r//" thelastofat.js | sed ':a;N;$!ba;s/\n//g'
+		</div>
+		<h2>Markdown</h2>
+		<p>Markdown is cut from the code header. Just copy it and paste in
+			README.markdown
+		</p>
+		<div id="markdown" class="code">
+		</div>
+	</body>
+	<script>
+
+	function htmlEntities(html){
+	  var e = document.createElement('div');
+	  e.innerText = html;
+	  return e.innerHTML.replace(/ /g,"&nbsp;");
+	}
+
+	function make() {
+		var x=new XMLHttpRequest(), comment="", getcomment=true;
+		x.open("GET","../thelastofat.js",false); // Synchronous! Ayeee! :)
+		x.send();
+		var code=x.responseText.split("\n");
+		for (var i=0;i<code.length;i++) {
+			if (getcomment) {
+				if (code[i].substr(0,6)=="// ***")
+					getcomment=false;
+				else
+					comment+=code[i].substr(3)+"\n";
+			}
+			code[i]=code[i].replace(/[ ]*\/\/.*/,"");
+			code[i]=code[i].replace(/\r/g,"");
+			code[i]=code[i].replace(/\t/g,"");
+		}
+		code=code.join("");
+		document.getElementById("minicode").innerHTML=htmlEntities(code);
+		document.getElementById("minicodelength").innerHTML=code.length;
+		document.getElementById("markdown").innerHTML=htmlEntities(comment);
+	}
+
+	</script>
+</html>
